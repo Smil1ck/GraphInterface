@@ -1,0 +1,14 @@
+C:\Users\matve\Desktop\drop c++\GraphErmakov\GraphErmakov\obj\Debug\GraphErmakov.csproj.AssemblyReference.cache
+C:\Users\matve\Desktop\drop c++\GraphErmakov\GraphErmakov\obj\Debug\MainWindow.baml
+C:\Users\matve\Desktop\drop c++\GraphErmakov\GraphErmakov\obj\Debug\MainWindow.g.cs
+C:\Users\matve\Desktop\drop c++\GraphErmakov\GraphErmakov\obj\Debug\App.g.cs
+C:\Users\matve\Desktop\drop c++\GraphErmakov\GraphErmakov\obj\Debug\GraphErmakov_MarkupCompile.cache
+C:\Users\matve\Desktop\drop c++\GraphErmakov\GraphErmakov\obj\Debug\GraphErmakov.g.resources
+C:\Users\matve\Desktop\drop c++\GraphErmakov\GraphErmakov\obj\Debug\GraphErmakov.Properties.Resources.resources
+C:\Users\matve\Desktop\drop c++\GraphErmakov\GraphErmakov\obj\Debug\GraphErmakov.csproj.GenerateResource.cache
+C:\Users\matve\Desktop\drop c++\GraphErmakov\GraphErmakov\obj\Debug\GraphErmakov.csproj.CoreCompileInputs.cache
+C:\Users\matve\Desktop\drop c++\GraphErmakov\GraphErmakov\bin\Debug\GraphErmakov.exe.config
+C:\Users\matve\Desktop\drop c++\GraphErmakov\GraphErmakov\bin\Debug\GraphErmakov.exe
+C:\Users\matve\Desktop\drop c++\GraphErmakov\GraphErmakov\bin\Debug\GraphErmakov.pdb
+C:\Users\matve\Desktop\drop c++\GraphErmakov\GraphErmakov\obj\Debug\GraphErmakov.exe
+C:\Users\matve\Desktop\drop c++\GraphErmakov\GraphErmakov\obj\Debug\GraphErmakov.pdb

@@ -100,6 +100,14 @@ namespace GraphErmakov.Services
                         _selectionInfo.AddToSelection(clickedObject, true);
                     }
                 }
+                else
+                {
+                    // Правый клик в пустое место - снимаем выделение
+                    if (!_isCtrlPressed)
+                    {
+                        _selectionInfo.ClearSelection();
+                    }
+                }
             }
         }
 

@@ -12,3 +12,18 @@ C:\Users\matve\Desktop\drop c++\GraphErmakov\GraphErmakov\bin\Debug\GraphErmakov
 C:\Users\matve\Desktop\drop c++\GraphErmakov\GraphErmakov\bin\Debug\GraphErmakov.pdb
 C:\Users\matve\Desktop\drop c++\GraphErmakov\GraphErmakov\obj\Debug\GraphErmakov.exe
 C:\Users\matve\Desktop\drop c++\GraphErmakov\GraphErmakov\obj\Debug\GraphErmakov.pdb
+D:\Users\ЕрмаковМП_2022\Source\Repos\GraphInterface\GraphErmakov\GraphErmakov\bin\Debug\GraphErmakov.exe.config
+D:\Users\ЕрмаковМП_2022\Source\Repos\GraphInterface\GraphErmakov\GraphErmakov\bin\Debug\GraphErmakov.exe
+D:\Users\ЕрмаковМП_2022\Source\Repos\GraphInterface\GraphErmakov\GraphErmakov\bin\Debug\GraphErmakov.pdb
+D:\Users\ЕрмаковМП_2022\Source\Repos\GraphInterface\GraphErmakov\GraphErmakov\obj\Debug\GraphErmakov.csproj.AssemblyReference.cache
+D:\Users\ЕрмаковМП_2022\Source\Repos\GraphInterface\GraphErmakov\GraphErmakov\obj\Debug\GraphErmakov.csproj.SuggestedBindingRedirects.cache
+D:\Users\ЕрмаковМП_2022\Source\Repos\GraphInterface\GraphErmakov\GraphErmakov\obj\Debug\MainWindow.baml
+D:\Users\ЕрмаковМП_2022\Source\Repos\GraphInterface\GraphErmakov\GraphErmakov\obj\Debug\MainWindow.g.cs
+D:\Users\ЕрмаковМП_2022\Source\Repos\GraphInterface\GraphErmakov\GraphErmakov\obj\Debug\App.g.cs
+D:\Users\ЕрмаковМП_2022\Source\Repos\GraphInterface\GraphErmakov\GraphErmakov\obj\Debug\GraphErmakov_MarkupCompile.cache
+D:\Users\ЕрмаковМП_2022\Source\Repos\GraphInterface\GraphErmakov\GraphErmakov\obj\Debug\GraphErmakov.g.resources
+D:\Users\ЕрмаковМП_2022\Source\Repos\GraphInterface\GraphErmakov\GraphErmakov\obj\Debug\GraphErmakov.Properties.Resources.resources
+D:\Users\ЕрмаковМП_2022\Source\Repos\GraphInterface\GraphErmakov\GraphErmakov\obj\Debug\GraphErmakov.csproj.GenerateResource.cache
+D:\Users\ЕрмаковМП_2022\Source\Repos\GraphInterface\GraphErmakov\GraphErmakov\obj\Debug\GraphErmakov.csproj.CoreCompileInputs.cache
+D:\Users\ЕрмаковМП_2022\Source\Repos\GraphInterface\GraphErmakov\GraphErmakov\obj\Debug\GraphErmakov.exe
+D:\Users\ЕрмаковМП_2022\Source\Repos\GraphInterface\GraphErmakov\GraphErmakov\obj\Debug\GraphErmakov.pdb

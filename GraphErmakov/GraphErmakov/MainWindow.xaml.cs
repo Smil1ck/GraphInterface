@@ -44,6 +44,14 @@ namespace GraphErmakov
 
                 if (e.ChangedButton == MouseButton.Left)
                 {
+                    // Если выбран инструмент "Cursor" - только выделение, без рисования
+                    if (IsCursorToolSelected())
+                    {
+                        _selectionService.HandleMouseDown(point, MouseButton.Left, ctrlPressed);
+                        UpdateSelectionInfo();
+                        return; // Не начинаем рисование в режиме курсора
+                    }
+
                     // Если не рисуем новую фигуру, обрабатываем выделение
                     if (!_isDrawing)
                     {
@@ -55,11 +63,13 @@ namespace GraphErmakov
                 {
                     _selectionService.HandleMouseDown(point, MouseButton.Right, ctrlPressed);
                     UpdateSelectionInfo();
-                    return; // Не начинаем рисование при правом клике
+                    return;
                 }
 
-                // Начинаем рисование новой фигуры, если не работаем с выделением
-                if (!_selectionService.Selection.HasSelection && ToolComboBox.SelectedItem != null)
+                // Начинаем рисование новой фигуры, если не работаем с выделением и не в режиме курсора
+                if (!_selectionService.Selection.HasSelection &&
+                    ToolComboBox.SelectedItem != null &&
+                    !IsCursorToolSelected())
                 {
                     var tool = ((ComboBoxItem)ToolComboBox.SelectedItem).Content.ToString();
                     _startPoint = point;
@@ -102,9 +112,15 @@ namespace GraphErmakov
                 var currentPoint = e.GetPosition(DrawingCanvas);
                 var leftButtonPressed = e.LeftButton == MouseButtonState.Pressed;
 
-                if (_isDrawing && _currentShape != null)
+                // В режиме курсора не рисуем новые фигуры, только выделение/перемещение
+                if (IsCursorToolSelected())
                 {
-                    // Рисование новой фигуры
+                    _selectionService.HandleMouseMove(currentPoint, leftButtonPressed);
+                    UpdateSelectionInfo();
+                }
+                else if (_isDrawing && _currentShape != null)
+                {
+                    // Рисование новой фигуры (только если не в режиме курсора)
                     _currentShape.Draw(_startPoint, currentPoint);
                 }
                 else
@@ -150,7 +166,36 @@ namespace GraphErmakov
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
-            _selectionService.HandleKeyDown(e.Key);
+            try
+            {
+                // Обработка удаления выделенных объектов
+                if (e.Key == Key.Back || e.Key == Key.Delete)
+                {
+                    if (_selectionService.Selection.HasSelection)
+                    {
+                        var selectedObjects = _selectionService.Selection.SelectedObjects.ToList();
+                        _drawingService.RemoveSelectedShapes(selectedObjects);
+                        _selectionService.ClearSelection();
+                        UpdateSelectionInfo();
+                        UpdateUndoRedoButtons();
+                        e.Handled = true; // Предотвращаем дальнейшую обработку
+                    }
+                }
+                else
+                {
+                    _selectionService.HandleKeyDown(e.Key);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при обработке клавиши: {ex.Message}");
+            }
+        }
+
+        private bool IsCursorToolSelected()
+        {
+            return ToolComboBox.SelectedItem is ComboBoxItem item &&
+                   item.Content?.ToString() == "Cursor";
         }
 
         private void Window_KeyUp(object sender, KeyEventArgs e)

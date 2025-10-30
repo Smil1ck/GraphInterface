@@ -14,7 +14,19 @@ namespace GraphErmakov.Services
         private readonly Canvas _canvas;
         private readonly List<GraphObject> _shapes = new List<GraphObject>();
         private readonly CommandManager _commandManager = new CommandManager();
+        public void ExecuteRemoveShapes(IEnumerable<GraphObject> shapes)
+        {
+            var command = new RemoveShapesCommand(this, shapes);
+            _commandManager.ExecuteCommand(command);
+        }
 
+        public void RemoveSelectedShapes(IEnumerable<GraphObject> selectedObjects)
+        {
+            if (selectedObjects?.Any() == true)
+            {
+                ExecuteRemoveShapes(selectedObjects.ToList());
+            }
+        }
         public DrawingService(Canvas canvas)
         {
             _canvas = canvas;

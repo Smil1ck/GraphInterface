@@ -107,6 +107,10 @@ namespace GraphErmakov.Services
         {
             if (shape?.Visual == null) return;
 
+            // Устанавливаем ZIndex для нового объекта (поверх существующих)
+            int maxZIndex = _shapes.Any() ? _shapes.Max(s => Canvas.GetZIndex(s.Visual)) : 0;
+            Canvas.SetZIndex(shape.Visual, maxZIndex + 1);
+
             _shapes.Add(shape);
             _canvas.Children.Add(shape.Visual);
         }
@@ -129,9 +133,22 @@ namespace GraphErmakov.Services
 
         public GraphObject GetShapeAtPoint(Point point)
         {
-            return _shapes.LastOrDefault(s => s?.ContainsPoint(point) == true);
+            // Получаем все объекты, содержащие точку, и сортируем по z-index (от большего к меньшему)
+            var shapesAtPoint = _shapes
+                .Where(s => s?.ContainsPoint(point) == true)
+                .OrderByDescending(s => Canvas.GetZIndex(s.Visual))
+                .ToList();
+
+            return shapesAtPoint.FirstOrDefault();
         }
 
+        public List<GraphObject> GetShapesAtPoint(Point point)
+        {
+            return _shapes
+                .Where(s => s?.ContainsPoint(point) == true)
+                .OrderByDescending(s => Canvas.GetZIndex(s.Visual))
+                .ToList();
+        }
         public void ApplyFillToSelected(IEnumerable<GraphObject> selectedObjects, Brush brush)
         {
             if (brush == null) return;
@@ -172,5 +189,54 @@ namespace GraphErmakov.Services
         {
             return _shapes.ToList();
         }
+
+        public void BringToFront(IEnumerable<GraphObject> shapes)
+        {
+            if (shapes?.Any() != true) return;
+
+            // Находим максимальный ZIndex среди всех объектов
+            int maxZIndex = _shapes.Any() ? _shapes.Max(s => Canvas.GetZIndex(s.Visual)) : 0;
+
+            foreach (var shape in shapes)
+            {
+                if (shape?.Visual != null)
+                {
+                    // Устанавливаем ZIndex больше максимального
+                    Canvas.SetZIndex(shape.Visual, maxZIndex + 1);
+                    maxZIndex++;
+                }
+            }
+        }
+
+        public void SendToBack(IEnumerable<GraphObject> shapes)
+        {
+            if (shapes?.Any() != true) return;
+
+            // Находим минимальный ZIndex среди всех объектов
+            int minZIndex = _shapes.Any() ? _shapes.Min(s => Canvas.GetZIndex(s.Visual)) : 0;
+
+            foreach (var shape in shapes)
+            {
+                if (shape?.Visual != null)
+                {
+                    // Устанавливаем ZIndex меньше минимального
+                    Canvas.SetZIndex(shape.Visual, minZIndex - 1);
+                    minZIndex--;
+                }
+            }
+        }
+
+        public void ExecuteBringToFront(IEnumerable<GraphObject> shapes)
+        {
+            var command = new ChangeZOrderCommand(this, shapes, true);
+            _commandManager.ExecuteCommand(command);
+        }
+
+        public void ExecuteSendToBack(IEnumerable<GraphObject> shapes)
+        {
+            var command = new ChangeZOrderCommand(this, shapes, false);
+            _commandManager.ExecuteCommand(command);
+        }
+
     }
 }

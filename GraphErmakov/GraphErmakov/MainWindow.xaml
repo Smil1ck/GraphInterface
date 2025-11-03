@@ -52,6 +52,8 @@
             </ComboBox>
 
             <Button Content="Clear Selection" Click="ClearSelection_Click" Margin="5" Width="100"/>
+            <Button Content="Bring to Front" x:Name="BringToFrontButton" Click="BringToFront_Click" Margin="5" Width="100" Visibility="Collapsed"/>
+            <Button Content="Send to Back" x:Name="SendToBackButton" Click="SendToBack_Click" Margin="5" Width="100" Visibility="Collapsed"/>
         </StackPanel>
 
         <!-- Холст для рисования -->
@@ -67,7 +69,7 @@
                 <TextBlock x:Name="SelectionInfoText" Text="No selection"/>
             </StatusBarItem>
             <StatusBarItem>
-                <TextBlock Text="| Cursor mode | Ctrl+Click: Multiple selection | Drag: Area selection | Backspace: Delete |"/>
+                <TextBlock Text="| Ctrl+Tab: Cycle selection | Ctrl+Click: Multiple | Backspace: Delete |"/>
             </StatusBarItem>
         </StatusBar>
     </Grid>

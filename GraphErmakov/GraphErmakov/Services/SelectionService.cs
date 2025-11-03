@@ -31,6 +31,10 @@ namespace GraphErmakov.Services
 
         public SelectionInfo Selection => _selectionInfo;
 
+
+        private int _currentSelectionIndex = 0;
+        private List<GraphObject> _lastShapesAtPoint = new List<GraphObject>();
+
         public SelectionService(Canvas canvas, DrawingService drawingService)
         {
             _canvas = canvas;
@@ -49,6 +53,27 @@ namespace GraphErmakov.Services
 
             _canvas.Children.Add(_selectionArea);
             Panel.SetZIndex(_selectionArea, 9999);
+        }
+
+
+        public void CycleSelectionAtPoint(Point point)
+        {
+            var shapesAtPoint = _drawingService.GetShapesAtPoint(point);
+            if (!shapesAtPoint.Any()) return;
+
+            // Если это новый набор объектов или индекс вышел за границы
+            if (!_lastShapesAtPoint.SequenceEqual(shapesAtPoint) || _currentSelectionIndex >= shapesAtPoint.Count)
+            {
+                _lastShapesAtPoint = shapesAtPoint;
+                _currentSelectionIndex = 0;
+            }
+
+            // Выделяем следующий объект в списке
+            var nextObject = shapesAtPoint[_currentSelectionIndex];
+            _selectionInfo.AddToSelection(nextObject, true);
+            _currentSelectionIndex = (_currentSelectionIndex + 1) % shapesAtPoint.Count;
+
+            UpdateResizeHandlesVisual();
         }
 
         private void InitializeSelectionVisual()
@@ -80,7 +105,9 @@ namespace GraphErmakov.Services
                     return;
                 }
 
-                var clickedObject = _drawingService.GetShapeAtPoint(point);
+                // Получаем все объекты в точке (учитывая z-order)
+                var shapesAtPoint = _drawingService.GetShapesAtPoint(point);
+                var clickedObject = shapesAtPoint.FirstOrDefault();
 
                 if (clickedObject != null)
                 {
@@ -119,7 +146,10 @@ namespace GraphErmakov.Services
             }
             else if (button == MouseButton.Right)
             {
-                var clickedObject = _drawingService.GetShapeAtPoint(point);
+                // Аналогично для правой кнопки - учитываем z-order
+                var shapesAtPoint = _drawingService.GetShapesAtPoint(point);
+                var clickedObject = shapesAtPoint.FirstOrDefault();
+
                 if (clickedObject != null)
                 {
                     if (_isCtrlPressed)

@@ -231,6 +231,14 @@ namespace GraphErmakov
                         e.Handled = true;
                     }
                 }
+                // Обработка циклического перебора объектов в точке
+                else if (e.Key == Key.Tab && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
+                {
+                    var mousePosition = Mouse.GetPosition(DrawingCanvas);
+                    _selectionService.CycleSelectionAtPoint(mousePosition);
+                    UpdateSelectionInfo();
+                    e.Handled = true;
+                }
                 else
                 {
                     _selectionService.HandleKeyDown(e.Key);
@@ -297,14 +305,16 @@ namespace GraphErmakov
             if (count == 0)
             {
                 SelectionInfoText.Text = "No selection";
-            }
-            else if (count == 1)
-            {
-                SelectionInfoText.Text = $"1 object selected";
+                // Скрываем кнопки управления Z-порядком
+                BringToFrontButton.Visibility = Visibility.Collapsed;
+                SendToBackButton.Visibility = Visibility.Collapsed;
             }
             else
             {
-                SelectionInfoText.Text = $"{count} objects selected";
+                SelectionInfoText.Text = $"{count} object(s) selected";
+                // Показываем кнопки управления Z-порядком
+                BringToFrontButton.Visibility = Visibility.Visible;
+                SendToBackButton.Visibility = Visibility.Visible;
             }
         }
 
@@ -350,6 +360,38 @@ namespace GraphErmakov
             catch (Exception ex)
             {
                 MessageBox.Show($"Ошибка при снятии выделения: {ex.Message}");
+            }
+        }
+
+        private void BringToFront_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (_selectionService.Selection.HasSelection)
+                {
+                    _drawingService.ExecuteBringToFront(_selectionService.Selection.SelectedObjects);
+                    UpdateUndoRedoButtons();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при перемещении на передний план: {ex.Message}");
+            }
+        }
+
+        private void SendToBack_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (_selectionService.Selection.HasSelection)
+                {
+                    _drawingService.ExecuteSendToBack(_selectionService.Selection.SelectedObjects);
+                    UpdateUndoRedoButtons();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при перемещении на задний план: {ex.Message}");
             }
         }
 

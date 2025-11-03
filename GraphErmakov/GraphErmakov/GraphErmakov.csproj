@@ -57,6 +57,7 @@
     </ApplicationDefinition>
     <Compile Include="Commands\AddShapeCommand.cs" />
     <Compile Include="Commands\ChangePropertyCommand.cs" />
+    <Compile Include="Commands\ChangeZOrderCommand.cs" />
     <Compile Include="Commands\CommandManager.cs" />
     <Compile Include="Commands\ICommand.cs" />
     <Compile Include="Commands\MoveShapesCommand.cs" />

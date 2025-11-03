@@ -221,11 +221,14 @@ namespace GraphErmakov
                     if (_selectionService.Selection.HasSelection)
                     {
                         var selectedObjects = _selectionService.Selection.SelectedObjects.ToList();
-                        _drawingService.RemoveSelectedShapes(selectedObjects);
+
+                        // Сначала очищаем выделение, затем удаляем объекты
                         _selectionService.ClearSelection();
+                        _drawingService.RemoveSelectedShapes(selectedObjects);
+
                         UpdateSelectionInfo();
                         UpdateUndoRedoButtons();
-                        e.Handled = true; // Предотвращаем дальнейшую обработку
+                        e.Handled = true;
                     }
                 }
                 else

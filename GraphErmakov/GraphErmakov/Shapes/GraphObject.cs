@@ -8,12 +8,28 @@ namespace GraphErmakov.Shapes
 {
     public abstract class GraphObject
     {
+        public virtual bool CanResize => false;
         public Shape Visual { get; protected set; }
         public bool IsSelected { get; set; }
 
         public Brush OriginalStroke { get; set; }
         public double OriginalStrokeThickness { get; set; }
 
+
+        public virtual void Resize(ResizeHandleType handleType, Point newPoint, Point startPoint)
+        {
+            // Базовая реализация - переопределяется в наследниках
+        }
+
+        public virtual ResizeHandle[] GetResizeHandles()
+        {
+            return new ResizeHandle[0];
+        }
+
+        public virtual void UpdateResizeHandles()
+        {
+            // Базовая реализация
+        }
         public Brush Stroke
         {
             get => Visual.Stroke;
@@ -69,8 +85,15 @@ namespace GraphErmakov.Shapes
                 IsSelected = true;
                 Stroke = Brushes.Red;
                 StrokeThickness = 3;
+
+                // Принудительно обновляем визуальное представление
+                if (Visual != null)
+                {
+                    Visual.InvalidateVisual();
+                }
             }
         }
+
 
         public virtual void Deselect()
         {
@@ -79,6 +102,12 @@ namespace GraphErmakov.Shapes
                 IsSelected = false;
                 Stroke = OriginalStroke;
                 StrokeThickness = OriginalStrokeThickness;
+
+                // Принудительно обновляем визуальное представление
+                if (Visual != null)
+                {
+                    Visual.InvalidateVisual();
+                }
             }
         }
 

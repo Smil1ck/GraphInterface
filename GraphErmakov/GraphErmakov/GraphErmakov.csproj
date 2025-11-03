@@ -61,11 +61,14 @@
     <Compile Include="Commands\ICommand.cs" />
     <Compile Include="Commands\MoveShapesCommand.cs" />
     <Compile Include="Commands\RemoveShapesCommand.cs" />
+    <Compile Include="Commands\ResizeShapeCommand.cs" />
     <Compile Include="Models\SelectionInfo.cs" />
     <Compile Include="Services\DrawingService.cs" />
     <Compile Include="Services\SelectionService.cs" />
     <Compile Include="Shapes\EllipseShape.cs" />
     <Compile Include="Shapes\RectangleShape.cs" />
+    <Compile Include="Shapes\ResizeHandle.cs" />
+    <Compile Include="Shapes\ResizeHandleType.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

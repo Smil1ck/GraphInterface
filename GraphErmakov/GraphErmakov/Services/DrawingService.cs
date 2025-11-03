@@ -20,10 +20,81 @@ namespace GraphErmakov.Services
             _commandManager.ExecuteCommand(command);
         }
 
+
+        public void ShowResizeHandles(GraphObject shape)
+        {
+            if (shape?.CanResize != true) return;
+
+            foreach (var handle in shape.GetResizeHandles())
+            {
+                if (!_canvas.Children.Contains(handle.Visual))
+                {
+                    _canvas.Children.Add(handle.Visual);
+                }
+                // Обновим позицию маркера
+                UpdateResizeHandlePosition(handle);
+                Panel.SetZIndex(handle.Visual, 10000);
+            }
+        }
+        public void UpdateResizeHandlePosition(ResizeHandle handle)
+        {
+            Canvas.SetLeft(handle.Visual, handle.Position.X - handle.Visual.Width / 2);
+            Canvas.SetTop(handle.Visual, handle.Position.Y - handle.Visual.Height / 2);
+        }
+
+        public void ExecuteResizeShape(GraphObject shape, ResizeHandleType handleType, Point startPoint, Point endPoint)
+        {
+            var command = new ResizeShapeCommand(shape, handleType, startPoint, endPoint);
+            _commandManager.ExecuteCommand(command);
+        }
+
+        public void UpdateAllResizeHandles(GraphObject shape)
+        {
+            if (shape?.CanResize != true) return;
+
+            foreach (var handle in shape.GetResizeHandles())
+            {
+                UpdateResizeHandlePosition(handle);
+            }
+        }
+
+        public void HideResizeHandles(GraphObject shape)
+        {
+            if (shape?.CanResize != true) return;
+
+            foreach (var handle in shape.GetResizeHandles())
+            {
+                _canvas.Children.Remove(handle.Visual);
+            }
+        }
+
+        public void HideAllResizeHandles()
+        {
+            foreach (var shape in _shapes)
+            {
+                if (shape.CanResize)
+                {
+                    foreach (var handle in shape.GetResizeHandles())
+                    {
+                        _canvas.Children.Remove(handle.Visual);
+                    }
+                }
+            }
+        }
+
         public void RemoveSelectedShapes(IEnumerable<GraphObject> selectedObjects)
         {
             if (selectedObjects?.Any() == true)
             {
+                // Перед удалением скрываем маркеры для этих объектов
+                foreach (var shape in selectedObjects)
+                {
+                    if (shape.CanResize)
+                    {
+                        HideResizeHandles(shape);
+                    }
+                }
+
                 ExecuteRemoveShapes(selectedObjects.ToList());
             }
         }

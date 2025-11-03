@@ -21,6 +21,13 @@ namespace GraphErmakov.Services
         private bool _isMoving;
         private Point _moveStartPoint;
         private bool _isCtrlPressed;
+        private bool _isAreaSelection;
+
+        private ResizeHandle _activeResizeHandle;
+        private Point _resizeStartPoint;
+        private GraphObject _resizingObject;
+        private bool _isResizing;
+
 
         public SelectionInfo Selection => _selectionInfo;
 
@@ -29,7 +36,19 @@ namespace GraphErmakov.Services
             _canvas = canvas;
             _drawingService = drawingService;
             _selectionInfo = new SelectionInfo();
-            InitializeSelectionVisual();
+
+            // Инициализируем selection area
+            _selectionArea = new Rectangle
+            {
+                Stroke = Brushes.DodgerBlue,
+                StrokeThickness = 1,
+                StrokeDashArray = new DoubleCollection(new double[] { 4, 2 }),
+                Fill = new SolidColorBrush(Color.FromArgb(30, 30, 144, 255)),
+                Visibility = Visibility.Collapsed // Начинаем со скрытого состояния
+            };
+
+            _canvas.Children.Add(_selectionArea);
+            Panel.SetZIndex(_selectionArea, 9999);
         }
 
         private void InitializeSelectionVisual()
@@ -53,6 +72,14 @@ namespace GraphErmakov.Services
 
             if (button == MouseButton.Left)
             {
+                // Сначала проверяем маркеры изменения размера
+                var resizeHandle = GetResizeHandleAtPoint(point);
+                if (resizeHandle != null && _selectionInfo.SelectedObjects.Count == 1)
+                {
+                    StartResize(resizeHandle, point);
+                    return;
+                }
+
                 var clickedObject = _drawingService.GetShapeAtPoint(point);
 
                 if (clickedObject != null)
@@ -82,9 +109,13 @@ namespace GraphErmakov.Services
                     if (!_isCtrlPressed)
                     {
                         _selectionInfo.ClearSelection();
+                        _drawingService.HideAllResizeHandles();
                     }
                     StartAreaSelection(point);
                 }
+
+                // Обновляем визуальное отображение маркеров
+                UpdateResizeHandlesVisual();
             }
             else if (button == MouseButton.Right)
             {
@@ -106,10 +137,73 @@ namespace GraphErmakov.Services
                     if (!_isCtrlPressed)
                     {
                         _selectionInfo.ClearSelection();
+                        _drawingService.HideAllResizeHandles();
                     }
+                }
+                UpdateResizeHandlesVisual();
+            }
+        }
+
+        // Добавим метод для обновления визуального отображения маркеров
+        private void UpdateResizeHandlesVisual()
+        {
+            _drawingService.HideAllResizeHandles();
+
+            if (_selectionInfo.SelectedObjects.Count == 1)
+            {
+                var selectedObject = _selectionInfo.SelectedObjects[0];
+                if (selectedObject.CanResize)
+                {
+                    _drawingService.ShowResizeHandles(selectedObject);
                 }
             }
         }
+
+        private ResizeHandle GetResizeHandleAtPoint(Point point)
+        {
+            if (_selectionInfo.SelectedObjects.Count == 1)
+            {
+                var selectedObject = _selectionInfo.SelectedObjects[0];
+                if (selectedObject.CanResize)
+                {
+                    foreach (var handle in selectedObject.GetResizeHandles())
+                    {
+                        if (handle.ContainsPoint(point))
+                            return handle;
+                    }
+                }
+            }
+            return null;
+        }
+
+        private void StartResize(ResizeHandle handle, Point point)
+        {
+            _isResizing = true;
+            _activeResizeHandle = handle;
+            _resizeStartPoint = point;
+            _resizingObject = _selectionInfo.SelectedObjects[0];
+        }
+
+        private void UpdateResize(Point currentPoint)
+        {
+            if (_isResizing && _resizingObject != null && _activeResizeHandle != null)
+            {
+                // Используем команду для изменения размера
+                _drawingService.ExecuteResizeShape(_resizingObject, _activeResizeHandle.Type, _resizeStartPoint, currentPoint);
+                _resizeStartPoint = currentPoint;
+
+                // Обновляем маркеры на холсте
+                _drawingService.UpdateAllResizeHandles(_resizingObject);
+            }
+        }
+
+        private void EndResize()
+        {
+            _isResizing = false;
+            _activeResizeHandle = null;
+            _resizingObject = null;
+        }
+
 
         public void HandleMouseMove(Point currentPoint, bool leftButtonPressed)
         {
@@ -121,7 +215,12 @@ namespace GraphErmakov.Services
             {
                 MoveSelection(currentPoint);
             }
+            else if (_isResizing && leftButtonPressed) // Добавляем условие для изменения размера
+            {
+                UpdateResize(currentPoint);
+            }
         }
+
 
         public void HandleMouseUp(Point point, MouseButton button)
         {
@@ -134,6 +233,10 @@ namespace GraphErmakov.Services
                 else if (_isMoving)
                 {
                     EndMove();
+                }
+                else if (_isResizing) // Добавляем завершение изменения размера
+                {
+                    EndResize();
                 }
             }
         }
@@ -157,6 +260,7 @@ namespace GraphErmakov.Services
         private void StartAreaSelection(Point startPoint)
         {
             _selectionInfo.StartAreaSelection(startPoint);
+            _isAreaSelection = true; // Устанавливаем флаг
             Canvas.SetLeft(_selectionArea, startPoint.X);
             Canvas.SetTop(_selectionArea, startPoint.Y);
             _selectionArea.Width = 0;
@@ -179,12 +283,21 @@ namespace GraphErmakov.Services
             _selectionArea.Height = height;
 
             _selectionInfo.UpdateAreaSelection(currentPoint, _drawingService.GetShapes());
+
+            // Обновляем маркеры после изменения выделения
+            UpdateResizeHandlesVisual();
         }
 
         private void EndAreaSelection()
         {
-            _selectionArea.Visibility = Visibility.Collapsed;
+            if (_selectionArea != null)
+            {
+                _selectionArea.Visibility = Visibility.Collapsed;
+                _selectionArea.Width = 0;
+                _selectionArea.Height = 0;
+            }
             _selectionInfo.EndAreaSelection();
+            _isAreaSelection = false;
         }
 
         private void StartMove(Point startPoint)
@@ -193,6 +306,8 @@ namespace GraphErmakov.Services
             {
                 _isMoving = true;
                 _moveStartPoint = startPoint;
+                // Скрываем маркеры при начале перемещения
+                _drawingService.HideAllResizeHandles();
             }
         }
 
@@ -220,13 +335,33 @@ namespace GraphErmakov.Services
         private void EndMove()
         {
             _isMoving = false;
+            // Показываем маркеры после завершения перемещения
+            UpdateResizeHandlesVisual();
         }
 
         public void ClearSelection()
         {
+            // Очищаем выделение в SelectionInfo
             _selectionInfo.ClearSelection();
-        }
 
+            // Сбрасываем все флаги состояния
+            _isMoving = false;
+            _isResizing = false;
+            _isAreaSelection = false;
+            _activeResizeHandle = null;
+            _resizingObject = null;
+
+            // Скрываем область выделения (пунктирную линию)
+            if (_selectionArea != null)
+            {
+                _selectionArea.Visibility = Visibility.Collapsed;
+                _selectionArea.Width = 0;
+                _selectionArea.Height = 0;
+            }
+
+            // Скрываем все маркеры изменения размера
+            _drawingService.HideAllResizeHandles();
+        }
         public void ApplyToAllSelected(System.Action<GraphObject> action)
         {
             foreach (var obj in _selectionInfo.SelectedObjects)

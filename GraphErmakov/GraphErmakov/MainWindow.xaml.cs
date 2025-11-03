@@ -26,12 +26,39 @@ namespace GraphErmakov
                 _drawingService = new DrawingService(DrawingCanvas);
                 _selectionService = new SelectionService(DrawingCanvas, _drawingService);
 
+                // Добавляем обработчик события выбора инструмента
+                ToolComboBox.SelectionChanged += ToolComboBox_SelectionChanged;
+
+                // Устанавливаем курсор как активный инструмент по умолчанию
+                CursorToolButton.Background = Brushes.LightBlue;
+
                 UpdateUndoRedoButtons();
                 UpdateSelectionInfo();
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Ошибка инициализации MainWindow: {ex.Message}");
+            }
+        }
+
+        // Добавляем новый метод для обработки изменения выбора инструмента
+        private void ToolComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                if (ToolComboBox.SelectedItem != null)
+                {
+                    // Сбрасываем визуальное выделение с кнопки курсора при выборе фигуры
+                    CursorToolButton.Background = Brushes.Transparent;
+
+                    // Снимаем выделение с объектов при переключении на инструмент рисования
+                    _selectionService.ClearSelection();
+                    UpdateSelectionInfo();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при изменении инструмента: {ex.Message}");
             }
         }
 
@@ -71,6 +98,7 @@ namespace GraphErmakov
                     ToolComboBox.SelectedItem != null &&
                     !IsCursorToolSelected())
                 {
+                    CursorToolButton.Background = Brushes.Transparent;
                     var tool = ((ComboBoxItem)ToolComboBox.SelectedItem).Content.ToString();
                     _startPoint = point;
                     _isDrawing = true;
@@ -105,6 +133,25 @@ namespace GraphErmakov
             }
         }
 
+        private void CursorTool_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // Сбрасываем выделение с ComboBox
+                ToolComboBox.SelectedItem = null;
+
+                // Визуально выделяем кнопку курсора
+                CursorToolButton.Background = Brushes.LightBlue;
+
+                // Снимаем выделение с фигур при переключении на курсор
+                _selectionService.ClearSelection();
+                UpdateSelectionInfo();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при переключении на курсор: {ex.Message}");
+            }
+        }
         private void DrawingCanvas_MouseMove(object sender, MouseEventArgs e)
         {
             try
@@ -194,8 +241,8 @@ namespace GraphErmakov
 
         private bool IsCursorToolSelected()
         {
-            return ToolComboBox.SelectedItem is ComboBoxItem item &&
-                   item.Content?.ToString() == "Cursor";
+            // Проверяем, активна ли кнопка курсора (имеет синий фон)
+            return CursorToolButton.Background == Brushes.LightBlue;
         }
 
         private void Window_KeyUp(object sender, KeyEventArgs e)

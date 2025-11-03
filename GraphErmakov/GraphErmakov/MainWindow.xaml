@@ -12,9 +12,16 @@
 
         <!-- Панель инструментов -->
         <StackPanel Grid.Row="0" Orientation="Horizontal" Background="LightGray" Margin="5">
+            <!-- Кнопка курсора отдельно -->
+            <Button x:Name="CursorToolButton" Content="🚫 Cursor" 
+                    ToolTip="Selection tool"
+                    Click="CursorTool_Click" 
+                    Margin="5" Width="80" Background="LightBlue"/>
+
+            <Separator Margin="5,0" Width="2" Background="DarkGray"/>
+
+            <!-- Выпадающий список для фигур -->
             <ComboBox x:Name="ToolComboBox" Width="100" Margin="5">
-                <ComboBoxItem Content="Cursor" IsSelected="True"/>
-                <!-- Добавлено -->
                 <ComboBoxItem Content="Point"/>
                 <ComboBoxItem Content="Line"/>
                 <ComboBoxItem Content="Rectangle"/>
@@ -55,13 +62,12 @@
                 MouseUp="DrawingCanvas_MouseUp"/>
 
         <!-- Строка состояния -->
-        <!-- GraphErmakov/GraphErmakov/MainWindow.xaml -->
         <StatusBar Grid.Row="2" Background="LightBlue">
             <StatusBarItem>
                 <TextBlock x:Name="SelectionInfoText" Text="No selection"/>
             </StatusBarItem>
             <StatusBarItem>
-                <TextBlock Text="| Cursor mode | Ctrl+Click: Multiple | Drag: Area selection | Backspace: Delete |"/>
+                <TextBlock Text="| Cursor mode | Ctrl+Click: Multiple selection | Drag: Area selection | Backspace: Delete |"/>
             </StatusBarItem>
         </StatusBar>
     </Grid>

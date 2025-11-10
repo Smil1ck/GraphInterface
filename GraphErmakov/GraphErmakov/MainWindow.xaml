@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="GraphErmakov - Multiple Selection" Height="500" Width="700"
         KeyDown="Window_KeyDown" KeyUp="Window_KeyUp"
-        Background="#2d2d30" Foreground="White">
+        Background="black" Foreground="White">
 
     <Window.Resources>
         <!-- Стиль для кнопок -->
@@ -108,7 +108,7 @@
 
         <!-- Холст для рисования -->
         <Canvas Grid.Row="1" x:Name="DrawingCanvas" 
-                Background="#1e1e1e"
+                Background="white"
                 MouseDown="DrawingCanvas_MouseDown"
                 MouseMove="DrawingCanvas_MouseMove"
                 MouseUp="DrawingCanvas_MouseUp"/>
